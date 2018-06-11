@@ -33,22 +33,32 @@ class Nursery:
 
     def _child_finished(self, task):
         self._children.remove(task)
-        exc = task.exception()
-        if exc is not None:
-            self._add_exc(exc)
+        try:
+            exc = task.exception()
+        except asyncio.CancelledError:
+            pass
+        else:
+            if exc is not None:
+                self._add_exc(exc)
 
     def _add_exc(self, exc):
         self._pending_excs.append(exc)
         self._loop.call_soon(self._parent_task.cancel)
 
     async def __aenter__(self):
+        if self.closed:
+            raise NurseryClosed
         self._parent_task = asyncio.Task.current_task(self._loop)
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        if exc is not None:
-            if not (exc_type is asyncio.CancelledError and self._pending_excs):
-                self._add_exc(exc)
+        self.closed = True
+        if exc_type is asyncio.CancelledError and not self._pending_excs:
+            # Parent was cancelled, cancel all children
+            for child in self._children.copy():
+                child.cancel()
+        elif exc is not None and exc_type is not asyncio.CancelledError:
+            self._add_exc(exc)
         try:
             await asyncio.gather(*self._children, return_exceptions=True)
         except asyncio.CancelledError:

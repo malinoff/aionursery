@@ -10,6 +10,15 @@ platform = "*"
 [package.requirements]
 python = "~3.5"
 [[package]]
+name = "async-timeout"
+version = "3.0.0"
+description = "Timeout context manager for asyncio programs"
+category = "dev"
+optional = false
+python-versions = ">=3.5.3"
+platform = "*"
+
+[[package]]
 name = "atomicwrites"
 version = "1.1.5"
 description = "Atomic file writes."
@@ -139,10 +148,11 @@ platform = "*"
 [metadata]
 python-versions = "^3.4"
 platform = "*"
-content-hash = "decb7706bb19f9d8fd5c99af0024ea1961fb258cea41190d3d39edd6256ac825"
+content-hash = "b3e6c8f16124e7a0f744d346b003ed0709d919b316da5c9a5f13ec3b9a0c65f1"
 
 [metadata.hashes]
 async-generator = [ "2f45541002a14f80fffc6d52788f92470ff0d9bfe81c434ea8cd60babe43de9e", "b7d5465c6174fe86dba498ececb175f93a6097ffb7cc91946405e1f05b848371",]
+async-timeout = [ "474d4bc64cee20603e225eb1ece15e248962958b45a3648a9f5cc29e827a610c", "b3c0ddc416736619bd4a95ca31de8da6920c3b9a140c64dbef2b2fa7bf521287",]
 atomicwrites = [ "a24da68318b08ac9c9c45029f4a10371ab5b20e4226738e150e6e7c571630ae6", "240831ea22da9ab882b551b31d4225591e5e447a68c5e188db5b89ca1d487585",]
 attrs = [ "4b90b09eeeb9b88c35bc642cbac057e45a5fd85367b985bd2809c62b7b939265", "e0d0eb91441a3b53dab4d9b743eafc1ac44476296a2053b6ca3af0b139faf87b",]
 colorama = [ "463f8483208e921368c9f306094eb6f725c6ca42b0f97e313cb5d5512459feda", "48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1",]

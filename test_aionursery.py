@@ -3,8 +3,9 @@ import textwrap
 import traceback
 
 import pytest
+import async_timeout
 
-from aionursery import Nursery, MultiError
+from aionursery import Nursery, NurseryClosed, MultiError
 
 
 @pytest.mark.asyncio
@@ -159,6 +160,23 @@ async def test_shielded_child_continues_running():
     assert work_done
 
 
+@pytest.mark.asyncio
+async def test_nursery_cant_be_reused():
+    """
+    An already used nursery raises NurseryClosed when used again.
+    """
+    nursery = Nursery()
+    async with nursery:
+        pass
+
+    with pytest.raises(NurseryClosed):
+        async with nursery:
+            pass
+
+    with pytest.raises(NurseryClosed):
+        nursery.start_soon(asyncio.sleep(0))
+
+
 def test_multi_error_contains_all_tracebacks():
     """
     When a MultiError raises, its __str__ contains all tracebacks.
@@ -186,3 +204,29 @@ def test_multi_error_contains_all_tracebacks():
 
     assert 'Details of embedded exception 1:' in str(error)
     assert textwrap.indent(bar_traceback, '  ') in str(error)
+
+
+@pytest.mark.asyncio
+async def test_timeout_is_respected():
+    """
+    When using ``async_timeout``, the timeout is respected and all tasks
+    (both parent and children) are properly cancelled.
+    """
+    parent_cancelled = child_cancelled = False
+
+    async def sleepy():
+        nonlocal child_cancelled
+        try:
+            await asyncio.sleep(1000 * 1000)
+        except asyncio.CancelledError:
+            child_cancelled = True
+
+    async with async_timeout.timeout(0.01):
+        try:
+            async with Nursery() as nursery:
+                nursery.start_soon(sleepy())
+                await asyncio.sleep(1000 * 1000)
+        except asyncio.CancelledError:
+            parent_cancelled = True
+
+    assert parent_cancelled and child_cancelled
