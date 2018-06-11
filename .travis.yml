@@ -10,6 +10,7 @@ install:
 script:
 - poetry run pytest -v --cov aionursery --cov-report term-missing test_aionursery.py
 - codecov
+- env
 - .travis/publish.sh
 env:
   global:
