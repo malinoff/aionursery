@@ -1,6 +1,13 @@
 aionursery
 ==========
 
+.. image:: https://travis-ci.com/malinoff/aionursery.svg?branch=master
+  :target: https://travis-ci.com/malinoff/aionursery
+
+.. image:: https://codecov.io/gh/malinoff/aionursery/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/malinoff/aionursery
+
+
 This library implements a Nursery object, similar to trio's Nursery_ for ``asyncio``.
 
 .. _Nursery: http://trio.readthedocs.io/en/latest/reference-core.html#nurseries-and-spawning
