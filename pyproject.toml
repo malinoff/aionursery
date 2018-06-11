@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "aionursery"
-version = "0.1.0"
+version = "0.1.2"
 description = "Manage background asyncio tasks"
+readme = "README.rst"
 authors = ["Dmitry Malinovsky <damalinov@gmail.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "^3.4"
+python = "^3.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.5"
