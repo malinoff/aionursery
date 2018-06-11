@@ -76,7 +76,7 @@ class NurseryClosed(Exception):
     """
 
 
-class MultiError(BaseException):
+class MultiError(Exception):
     """
     Gathers multiple exceptions into one, providing a sane __str__.
     All raised exceptions are available as ``exceptions`` property.
@@ -86,7 +86,7 @@ class MultiError(BaseException):
         assert exceptions
         if len(exceptions) == 1:
             return exceptions[0]
-        self = BaseException.__new__(cls)
+        self = Exception.__new__(cls)
         self.exceptions = exceptions
         return self
 
