@@ -33,6 +33,8 @@ Keep in mind that:
 
 Since all tasks are descendents of the initial task, one consequence of this is that the parent can’t finish until all tasks have finished.
 
+Please note that you can't reuse an already exited nursery. Trying to re-open it again, or to ``start_soon`` more tasks in it will raise ``NurseryClosed``.
+
 Shielding some tasks from being cancelled
 -----------------------------------------
 
@@ -86,3 +88,23 @@ If your background tasks are long-lived, you should use ``asyncio.Queue`` to pas
             while some_condition():
                 data = await queue.get()
                 await do_stuff_with(data)
+
+
+Integration with ``async_timeout``
+----------------------------------
+
+You can wrap a nursery in a ``async_timeout.timeout`` context manager.
+When timeout happens, the whole nursery cancels:
+
+.. code-block:: python
+
+    from async_timeout import timeout
+
+    async def child():
+        await asyncio.sleep(1000 * 1000)
+
+    async def parent():
+        async with timeout(10):
+            async with Nursery() as nursery:
+                nursery.start_soon(child())
+                await asyncio.sleep(1000 * 1000)
