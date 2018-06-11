@@ -5,6 +5,8 @@ description = "Manage background asyncio tasks"
 readme = "README.rst"
 authors = ["Dmitry Malinovsky <damalinov@gmail.com>"]
 license = "Apache-2.0"
+repository = "https://github.com/malinoff/aionursery"
+homepage = "https://github.com/malinoff/aionursery"
 
 [tool.poetry.dependencies]
 python = "^3.5"
