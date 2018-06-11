@@ -8,4 +8,4 @@ install:
 - pip install poetry
 - poetry install
 script:
-- pytest -v --cov aionursery --cov-report term-missing test_aionursery.py
+- poetry run pytest -v --cov aionursery --cov-report term-missing test_aionursery.py
