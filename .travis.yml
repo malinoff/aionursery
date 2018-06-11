@@ -12,7 +12,7 @@ script:
 - codecov
 - |
     if [[ $GIT_TAG != "" ]] && [[ $TRAVIS_PYTHON_VERSION == "3.6" ]]; then
-        poetry publish --build --username malinoff --password "$PYPI_PASSWORD"'
+        poetry publish --build --username malinoff --password "$PYPI_PASSWORD"
     fi
 env:
   global:
