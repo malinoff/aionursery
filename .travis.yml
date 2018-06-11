@@ -1,0 +1,11 @@
+language: python
+python:
+- "3.5"
+- "3.6"
+- "3.7-dev"
+- "nightly"
+install:
+- pip install poetry
+- poetry install
+script:
+- pytest -v --cov aionursery --cov-report term-missing test_aionursery.py
