@@ -52,7 +52,6 @@ class Nursery:
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        self.closed = True
         if exc_type is asyncio.CancelledError and not self._pending_excs:
             # Parent was cancelled, cancel all children
             for child in self._children.copy():
@@ -63,6 +62,7 @@ class Nursery:
             await asyncio.gather(*self._children, return_exceptions=True)
         except asyncio.CancelledError:
             pass
+        self.closed = True
         if self._pending_excs:
             raise MultiError(self._pending_excs)
 
