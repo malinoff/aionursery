@@ -139,6 +139,26 @@ async def test_child_crash_wakes_parent():
 
 
 @pytest.mark.asyncio
+async def test_child_can_spawn_children():
+    """
+    A child task can spawn even more children tasks.
+    """
+    i = 0
+
+    async def child(nursery):
+        nonlocal i
+        i += 1
+        if i == 3:
+            return
+        nursery.start_soon(child(nursery))
+        await asyncio.sleep(0)
+
+    async with Nursery() as nursery:
+        nursery.start_soon(child(nursery))
+
+
+
+@pytest.mark.asyncio
 async def test_shielded_child_continues_running():
     """
     A shielded child continues running.
