@@ -59,7 +59,8 @@ class Nursery:
         elif exc is not None and exc_type is not asyncio.CancelledError:
             self._add_exc(exc)
         try:
-            await asyncio.gather(*self._children, return_exceptions=True)
+            while self._children:
+                await asyncio.gather(*self._children, return_exceptions=True)
         except asyncio.CancelledError:
             pass
         self.closed = True
