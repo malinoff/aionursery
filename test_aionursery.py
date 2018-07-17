@@ -150,8 +150,8 @@ async def test_child_can_spawn_children():
         i += 1
         if i == 3:
             return
-        nursery.start_soon(child(nursery))
         await asyncio.sleep(0)
+        nursery.start_soon(child(nursery))
 
     async with Nursery() as nursery:
         nursery.start_soon(child(nursery))
