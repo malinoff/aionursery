@@ -157,6 +157,35 @@ async def test_child_can_spawn_children():
         nursery.start_soon(child(nursery))
 
 
+@pytest.mark.asyncio
+async def test_can_cancel_remaining():
+    """
+    A child task can cancel other remaining children.
+    """
+
+    cancelled = False
+
+    async def runs_forever():
+        nonlocal cancelled
+        try:
+            await asyncio.sleep(1000)
+        except asyncio.CancelledError:
+            cancelled = True
+
+    async def canceller(nursery):
+        nursery.cancel_remaining()
+
+    async with Nursery() as nursery:
+        nursery.start_soon(runs_forever())
+        nursery.start_soon(canceller(nursery))
+        # This allows children to be actually executed
+        await asyncio.sleep(0)
+        # This allows to execute cancellation logic in `runs_forever`
+        await asyncio.sleep(0)
+        # assert within context manager to be sure
+        # `runs_forever` hasn't been cancelled by the nursery
+        assert cancelled
+
 
 @pytest.mark.asyncio
 async def test_shielded_child_continues_running():

@@ -31,6 +31,16 @@ class Nursery:
         self._children.add(task)
         return task
 
+    def cancel_remaining(self):
+        """
+        Cancel all remaining running tasks.
+        """
+        current_task = asyncio.Task.current_task()
+        for task in self._children:
+            if task is current_task:
+                continue
+            task.cancel()
+
     def _child_finished(self, task):
         self._children.remove(task)
         try:
