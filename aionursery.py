@@ -93,13 +93,8 @@ class MultiError(Exception):
     All raised exceptions are available as ``exceptions`` property.
     """
 
-    def __new__(cls, exceptions):
-        assert exceptions
-        if len(exceptions) == 1:
-            return exceptions[0]
-        self = Exception.__new__(cls)
+    def __init__(self, exceptions):
         self.exceptions = exceptions
-        return self
 
     def __str__(self):
         lines = [super().__str__()]

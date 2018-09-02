@@ -15,10 +15,12 @@ async def test_parent_block_error_basic():
     """
     error = ValueError('whoops')
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(MultiError) as excinfo:
         async with Nursery():
             raise error
-    assert excinfo.value is error
+
+    assert len(excinfo.value.exceptions) == 1
+    assert excinfo.value.exceptions[0] is error
 
 
 @pytest.mark.asyncio
@@ -31,11 +33,12 @@ async def test_child_crash_basic():
     async def child():
         raise error
 
-    try:
+    with pytest.raises(MultiError) as excinfo:
         async with Nursery() as nursery:
             nursery.start_soon(child())
-    except ValueError as exc:
-        assert exc is error
+
+    assert len(excinfo.value.exceptions) == 1
+    assert excinfo.value.exceptions[0] is error
 
 
 @pytest.mark.asyncio
@@ -80,13 +83,14 @@ async def test_child_crash_propagation():
     async def crasher():
         raise error
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(MultiError) as excinfo:
         async with Nursery() as nursery:
             nursery.start_soon(looper())
             nursery.start_soon(crasher())
 
     assert looper_cancelled
-    assert excinfo.value is error
+    assert len(excinfo.value.exceptions) == 1
+    assert excinfo.value.exceptions[0] is error
 
 
 @pytest.mark.asyncio
@@ -129,13 +133,18 @@ async def test_child_crash_wakes_parent():
     """
     If a child task crashes, the context manager's body is cancelled.
     """
-    async def crasher():
-        raise ValueError
+    error = ValueError('crashed')
 
-    with pytest.raises(ValueError):
+    async def crasher():
+        raise error
+
+    with pytest.raises(MultiError) as excinfo:
         async with Nursery() as nursery:
             nursery.start_soon(crasher())
             await asyncio.sleep(1000 * 1000)
+
+    assert len(excinfo.value.exceptions) == 1
+    assert excinfo.value.exceptions[0] is error
 
 
 @pytest.mark.asyncio
@@ -203,7 +212,7 @@ async def test_shielded_child_continues_running():
         async with Nursery() as nursery:
             nursery.start_soon(asyncio.shield(worker()))
             raise RuntimeError
-    except RuntimeError:
+    except MultiError:
         pass
 
     assert work_done
