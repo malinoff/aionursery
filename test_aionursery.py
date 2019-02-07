@@ -1,3 +1,6 @@
+"""
+Unit tests for aionursery.py
+"""
 import asyncio
 import textwrap
 import traceback
@@ -230,7 +233,7 @@ async def test_nursery_cant_be_reused():
             pass
 
     with pytest.raises(NurseryClosed):
-        await nursery.start_soon(asyncio.sleep(0))
+        nursery.start_soon(asyncio.sleep(0))
 
 
 def test_multi_error_contains_all_tracebacks():
@@ -240,20 +243,20 @@ def test_multi_error_contains_all_tracebacks():
     try:
         raise ValueError('foo')
     except ValueError as exc:
-        foo = exc
+        foo_exc = exc
     try:
         raise KeyError('bar')
     except KeyError as exc:
-        bar = exc
+        bar_exc = exc
 
     foo_traceback = ''.join(traceback.format_exception(
-        type(foo), foo, foo.__traceback__
+        type(foo_exc), foo_exc, foo_exc.__traceback__
     ))
     bar_traceback = ''.join(traceback.format_exception(
-        type(bar), bar, bar.__traceback__
+        type(bar_exc), bar_exc, bar_exc.__traceback__
     ))
 
-    error = MultiError([foo, bar])
+    error = MultiError([foo_exc, bar_exc])
 
     assert 'Details of embedded exception 0:' in str(error)
     assert textwrap.indent(foo_traceback, '  ') in str(error)

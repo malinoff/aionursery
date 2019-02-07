@@ -8,6 +8,7 @@ install:
 - pip install poetry codecov
 - poetry install
 script:
+- poetry run pylint *.py
 - poetry run pytest -v --cov aionursery --cov-report term-missing test_aionursery.py
 - codecov
 - poetry build
