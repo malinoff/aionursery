@@ -19,8 +19,8 @@ async def test_parent_block_error_basic():
         async with Nursery():
             raise error
 
-    assert len(excinfo.value.exceptions) == 1
-    assert excinfo.value.exceptions[0] is error
+    assert len(excinfo.value) == 1
+    assert excinfo.value[0] is error
 
 
 @pytest.mark.asyncio
@@ -37,8 +37,8 @@ async def test_child_crash_basic():
         async with Nursery() as nursery:
             nursery.start_soon(child())
 
-    assert len(excinfo.value.exceptions) == 1
-    assert excinfo.value.exceptions[0] is error
+    assert len(excinfo.value) == 1
+    assert excinfo.value[0] is error
 
 
 @pytest.mark.asyncio
@@ -89,8 +89,8 @@ async def test_child_crash_propagation():
             nursery.start_soon(crasher())
 
     assert looper_cancelled
-    assert len(excinfo.value.exceptions) == 1
-    assert excinfo.value.exceptions[0] is error
+    assert len(excinfo.value) == 1
+    assert excinfo.value[0] is error
 
 
 @pytest.mark.asyncio
@@ -107,8 +107,7 @@ async def test_parent_and_child_both_crash():
             nursery.start_soon(crasher())
             raise KeyError
 
-    assert set(type(exc)
-               for exc in excinfo.value.exceptions) == {ValueError, KeyError}
+    assert set(type(exc) for exc in excinfo.value) == {ValueError, KeyError}
 
 
 @pytest.mark.asyncio
@@ -124,8 +123,7 @@ async def test_two_child_crashes():
             nursery.start_soon(crasher(KeyError))
             nursery.start_soon(crasher(ValueError))
 
-    assert set(type(exc)
-               for exc in excinfo.value.exceptions) == {ValueError, KeyError}
+    assert set(type(exc) for exc in excinfo.value) == {ValueError, KeyError}
 
 
 @pytest.mark.asyncio
@@ -143,8 +141,8 @@ async def test_child_crash_wakes_parent():
             nursery.start_soon(crasher())
             await asyncio.sleep(1000 * 1000)
 
-    assert len(excinfo.value.exceptions) == 1
-    assert excinfo.value.exceptions[0] is error
+    assert len(excinfo.value) == 1
+    assert excinfo.value[0] is error
 
 
 @pytest.mark.asyncio
@@ -232,7 +230,7 @@ async def test_nursery_cant_be_reused():
             pass
 
     with pytest.raises(NurseryClosed):
-        nursery.start_soon(asyncio.sleep(0))
+        await nursery.start_soon(asyncio.sleep(0))
 
 
 def test_multi_error_contains_all_tracebacks():

@@ -9,10 +9,13 @@ repository = "https://github.com/malinoff/aionursery"
 homepage = "https://github.com/malinoff/aionursery"
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.5.3"
+curio = "^0.9.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.5"
 pytest-asyncio = "^0.8.0"
 pytest-cov = "^2.5"
 async_timeout = "^3.0"
+flake8 = "^3.7"
+pylint = "^2.2"

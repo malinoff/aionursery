@@ -61,7 +61,7 @@ class Nursery:
         self._parent_task = asyncio.Task.current_task(self._loop)
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type, exc, _):
         if exc_type is asyncio.CancelledError and not self._pending_excs:
             # Parent was cancelled, cancel all children
             for child in self._children.copy():
@@ -94,6 +94,7 @@ class MultiError(Exception):
     """
 
     def __init__(self, exceptions):
+        super().__init__(exceptions)
         self.exceptions = exceptions
 
     def __str__(self):
@@ -107,3 +108,12 @@ class MultiError(Exception):
                 textwrap.indent(tb_lines, '  '),
             ]
         return '\n'.join(lines)
+
+    def __iter__(self):
+        return iter(self.exceptions)
+
+    def __len__(self):
+        return len(self.exceptions)
+
+    def __getitem__(self, item):
+        return self.exceptions[item]
