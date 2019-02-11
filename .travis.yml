@@ -2,7 +2,8 @@ language: python
 python:
 - '3.5'
 - '3.6'
-- 3.7-dev
+- '3.7'
+- 3.8-dev
 - nightly
 install:
 - pip install poetry codecov
@@ -18,5 +19,6 @@ deploy:
   on:
     python: '3.6'
     tags: true
+  user: malinoff
   password:
     secure: JHETTReXD6/smBHhrY4xieq5aFUxp7NguKjFk2jxUaQwAAPE5Gm58ShyrNOEtVIzJALbxOrqEU4rPL5vSKGlpnAdJJHHCa6rfEJ3S5veglqXpy7XzS+iFuoDhV5I2D+Ohx6/CR+gZ5h3yzN5gpJzKyghdNeFTOeHiVY3Ouz9+YlxE6Lsik+gA9JUcUjj80I+pG/6qheyp3iLO1wwXOx9B8TM6EBzqQ4DUlWsa17jqmgr0+Me5ATnnBxE0LOCAVUyQVjPaJ4yfrvNcAcd7GHIDGC2Vlrdv7BCF4HOKe/NTq7DOnpipDZLTHY9xctt/5Nat8kffDLEyE5UH4t7gXkAfXkZK0vA474xQrf2IZSRIF/hCLfdr7VFnt+rV+vRO0wrIC9VNG99gmHD17XJ3WZMhjwNV0Cbl/MD/V5b6izeJQPqM6nkGALc2fo5TGUKvEb60eDbuTxri95RmGRmyYusvryyIRUOKhIkcJWlOTVtfI0n9DSGnZ5iMhRrGJg3fKaxVf1IwKs4UlUO17NEA/SSGIJoeUZhtlV7n1WJVvg3g1bpRBK1pIT5G10h3j9lGgZvpTqoTB5cIbLLgqQH15JKpeb5xdpjYiyiUlmPY0aSGv/F5U3q0zQ3Dz/sx2hoCJ3HBr9amcFqPjkDI8N70pU9ADJtLDkNkehd1n3IDGzuqzo=
