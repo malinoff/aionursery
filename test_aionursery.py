@@ -80,6 +80,7 @@ async def test_child_crash_propagation():
                 await asyncio.sleep(0)
         except asyncio.CancelledError:
             looper_cancelled = True
+            raise
 
     error = ValueError('crashed')
 
@@ -181,6 +182,7 @@ async def test_can_cancel_remaining():
             await asyncio.sleep(1000)
         except asyncio.CancelledError:
             cancelled = True
+            raise
 
     async def canceller(nursery):
         nursery.cancel_remaining()
@@ -266,6 +268,34 @@ def test_multi_error_contains_all_tracebacks():
 
 
 @pytest.mark.asyncio
+async def test_can_nest_nurseries():
+    """
+    When nesting nurseries, nested exceptions are gathered into a tree
+    of MultiErrors.
+    """
+    outer_error = RuntimeError('outer')
+    inner_error = RuntimeError('inner')
+
+    async def child(outer):
+        if outer:
+            raise outer_error
+        else:
+            raise inner_error
+
+    with pytest.raises(MultiError) as exc_info:
+        async with Nursery() as outer:
+            outer.start_soon(child(outer=True))
+            async with Nursery() as inner:
+                inner.start_soon(child(outer=False))
+
+    assert len(exc_info.value) == 2
+    first, second = exc_info.value
+    assert first is outer_error
+    assert isinstance(second, MultiError)
+    assert second[0] is inner_error
+
+
+@pytest.mark.asyncio
 async def test_timeout_is_respected():
     """
     When using ``async_timeout``, the timeout is respected and all tasks
@@ -279,13 +309,17 @@ async def test_timeout_is_respected():
             await asyncio.sleep(1000 * 1000)
         except asyncio.CancelledError:
             child_cancelled = True
+            raise
 
-    async with async_timeout.timeout(0.01):
-        try:
-            async with Nursery() as nursery:
-                nursery.start_soon(sleepy())
-                await asyncio.sleep(1000 * 1000)
-        except asyncio.CancelledError:
-            parent_cancelled = True
+    # The outer timeout is for terminating the test
+    # in case the code doesn't work as intended.
+    async with async_timeout.timeout(1):
+        async with async_timeout.timeout(0.01):
+            try:
+                async with Nursery() as nursery:
+                    nursery.start_soon(sleepy())
+                    await asyncio.sleep(1000 * 1000)
+            except asyncio.CancelledError:
+                parent_cancelled = True
 
     assert parent_cancelled and child_cancelled
